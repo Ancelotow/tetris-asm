@@ -73,7 +73,7 @@ drawLand:
     call drawIcon
     mov hX, 70
     mov hY, 50
-    mov BX, offset rickyBlue
+    mov BX, offset rickyOrange
     call drawIcon
     mov hX, 40
     mov hY, 20
