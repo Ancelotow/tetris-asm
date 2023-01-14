@@ -1,6 +1,7 @@
+.idea
 
-.inc
-.obj
+*.inc
+*.obj
 
 LINK.EXE
 MASM.EXE
