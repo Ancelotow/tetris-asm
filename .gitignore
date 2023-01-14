@@ -2,6 +2,7 @@
 
 *.inc
 *.obj
+*.exe
 
 LINK.EXE
 MASM.EXE
