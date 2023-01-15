@@ -5,10 +5,16 @@ public smashboy
 public hero
 public cleveland
 public rhodeCleveland
+public rickyWidth
+public rickyHeight
 
 donnees segment public   ;--- Segment de donnees ---
 
-rickyOrange DW  15, 150
+rickyWidth DB 15
+rickyHeight DB 11
+
+rickyOrange DW  15, 165
+rio000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rio001 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 12, 12, 12
 rio002 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 12, 12, 12
 rio003 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 12, 12, 12
@@ -21,6 +27,7 @@ rio014 DB 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12
 rio015 DB 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12
 
 rickyBlue DW  15, 150
+rib000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rib001 DB 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rib002 DB 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rib003 DB 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
