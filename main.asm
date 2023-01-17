@@ -99,16 +99,16 @@ end_loop:
 ; Vérifi s'il y a une colision ou non
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_colision:
-  mov AX, cYY
-  mov loopY, AX
-  mov AX, cXX
-  mov loopX, AX
-  mov cWidth, 0
-  mov cHeight, 0
-  mov isColision, 0
-  jmp loop_vertical_compare
+    mov AX, cYY
+    mov loopY, AX
+    mov AX, cXX
+    mov loopX, AX
+    mov cWidth, 0
+    mov cHeight, 0
+    mov isColision, 0
+    jmp loop_vertical_compare
 
-  loop_vertical_compare:
+    loop_vertical_compare:
         mov AX, loopX
         mov pX, AX
         mov AX, loopY
@@ -122,29 +122,29 @@ get_colision:
         mov isColision, 1
         jmp end_move_down
 
-  end_move_down:
+    end_move_down:
         ret
 
-  loopback_vertical:
-      inc cHeight
-      inc loopY
-      jmp loop_vertical_compare
+    loopback_vertical:
+        inc cHeight
+        inc loopY
+        jmp loop_vertical_compare
 
-  loop_vertical_compare_black:
-      mov AL, rickyHeight
-      cmp cHeight, AL
-      je loop_vertical_compare_change_column
-      jmp loopback_vertical
+    loop_vertical_compare_black:
+        mov AL, rickyHeight
+        cmp cHeight, AL
+        je loop_vertical_compare_change_column
+        jmp loopback_vertical
 
-  loop_vertical_compare_change_column:
-       mov AL, rickyWidth
-       cmp cWidth, AL
-       je end_move_down
-       inc cWidth
-       inc loopX
-       mov AX, cYY
-       mov loopY, AX
-       jmp loop_vertical_compare
+    loop_vertical_compare_change_column:
+        mov AL, rickyWidth
+        cmp cWidth, AL
+        je end_move_down
+        inc cWidth
+        inc loopX
+        mov AX, cYY
+        mov loopY, AX
+        jmp loop_vertical_compare
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Dessine le block courant
@@ -185,10 +185,10 @@ drawLand:
 ;  Fin du programme
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 fin:
-     call VideoCMD
-     mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
-     mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
-     int 21h
+    call VideoCMD
+    mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
+    mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
+    int 21h
 
 code    ends               ; Fin du segment de code
 end prog                 ; Fin du programme
