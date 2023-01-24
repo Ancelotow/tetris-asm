@@ -4,17 +4,7 @@
 
 include libgfx.inc
 include random.inc
-extrn rickyBlue:word
-extrn rickyOrange:word
-extrn teewee:word
-extrn smashboy:word
-extrn hero:word
-extrn cleveland:word
-extrn rhodeCleveland:word
-
-extrn rickyWidth:byte
-extrn rickyHeight:byte
-
+include blocks.inc
 
 pile    segment stack     ; Segment de pile
 pile    ends
@@ -35,9 +25,12 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Autres données
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    cXX DW 75 ; Coordonée X  de la pièce courante
-    cYY DW 5 ; Coordonée Y de la pièce courante
-    cCol DB 42 ; Couleur de la pièce courante
+    cXX DW 75           ; Coordonée X  de la pièce courante
+    cYY DW 5            ; Coordonée Y de la pièce courante
+    cCol DB 42          ; Couleur de la pièce courante
+    cBlocks DW 0        ; Block courant
+    cBlocksWidth DB 0   ; Largeur du block courant
+    cBlocksHeight DB 0  ; Hauteur du block courant
 
     cWidth DB 0
     cHeight DB 0
@@ -54,6 +47,7 @@ prog:
     mov AX, donnees
 	mov DS, AX
     call Video13h
+    call get_random_blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
@@ -133,13 +127,13 @@ get_colision:
         jmp loop_vertical_compare
 
     loop_vertical_compare_black:
-        mov AL, rickyHeight
+        mov AL, cBlocksHeight
         cmp cHeight, AL
         je loop_vertical_compare_change_column
         jmp loopback_vertical
 
     loop_vertical_compare_change_column:
-        mov AL, rickyWidth
+        mov AL, cBlocksWidth
         cmp cWidth, AL
         je end_move_down
         inc cWidth
@@ -156,7 +150,7 @@ draw_blocks:
     mov hX, AX
     mov AX, cYY
     mov hY, AX
-    mov BX, offset rickyOrange
+    mov BX, cBlocks
     call drawIcon
     ret
 
@@ -181,6 +175,25 @@ drawLand:
     mov col, 7
     call Rectangle
     call drop_block
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Récupère un block aléatoirement
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+get_random_blocks:
+    mov diviseur, 7
+    call get_random
+    mov AX, reste
+    mov codeBlock, AL
+    call get_block_from_code
+    mov BX, currentBlock
+    mov cBlocks, BX
+    mov AL, blockWidth
+    mov cBlocksWidth, AL
+    mov AL, blockHeight
+    mov cBlocksHeight, AL
+    mov AL, blockColor
+    mov cCol, AL
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
