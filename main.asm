@@ -3,6 +3,7 @@
 ;******************
 
 include libgfx.inc
+include random.inc
 extrn rickyBlue:word
 extrn rickyOrange:word
 extrn teewee:word
@@ -13,6 +14,7 @@ extrn rhodeCleveland:word
 
 extrn rickyWidth:byte
 extrn rickyHeight:byte
+
 
 pile    segment stack     ; Segment de pile
 pile    ends
@@ -35,7 +37,7 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     cXX DW 75 ; Coordonée X  de la pièce courante
     cYY DW 5 ; Coordonée Y de la pièce courante
-    cCol DB 12 ; Couleur de la pièce courante
+    cCol DB 42 ; Couleur de la pièce courante
 
     cWidth DB 0
     cHeight DB 0

@@ -1,6 +1,5 @@
 .idea
 
-*.inc
 *.obj
 *.exe
 

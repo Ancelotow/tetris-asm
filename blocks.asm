@@ -114,7 +114,6 @@ rhodeClevelandWidth DB 15
 rhodeClevelandHeight DB 11
 rhodeCleveland DW  15, 165
 rle000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-
 rle001 DB 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 rle002 DB 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 rle003 DB 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2

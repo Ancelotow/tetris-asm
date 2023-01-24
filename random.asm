@@ -1,30 +1,34 @@
 ;******************************************************
-; Programme génration nombre aléatoir
+; Programme génration nombre aléatoire
 ;******************************************************
 
-pile    segment stack     ; Segment de pile
-pile    ends
+public dividende
+public diviseur
+public reste
 
-donnees segment public    ; Segment de donnees
-    dividende DB 10
-    diviseur DB 5
-    reste DB 0
+public get_second
+public modulo
+public get_random
+
+donnees segment public
+    dividende DW 7
+    diviseur DW 7
+    reste DW 0
 
     decade DB 0
     unit DB 0
 donnees ends
 
 code    segment public    ; Segment de code
-assume  cs:code,ds:donnees,es:code,ss:pile
+assume  cs:code,ds:donnees,es:code
 
 prog:
-    mov AX, donnees
-	mov DS, AX
-    call modulo
-    jmp fin
+    mov AH,4Ch
+    mov AL,00h
+    int 21h
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Boucle principale du progralle
+; Récupération des secondes courantes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_second:
     mov AH, 2Ch ; Appel de la focntion getTime()
@@ -49,33 +53,28 @@ get_second:
     mul BX
     add AL, unit
 
-    mov DL, AL
-    mov AH, 02h
-    int 21h
-
+    mov AH, 0
+    mov dividende, AX
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Modulo des secondes courante par un diviseur
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 modulo:
+    mov DX, 0
+    mov AX, dividende
+    mov CX, diviseur
+    div CX
+    mov reste, DX
+    ret
 
-    mov AL, dividende
-    mov CL, diviseur
-    div CL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Généraration d'un nombre aléatoire
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+get_random:
+    call get_second
+    call modulo
+    ret
 
-    mov DL, DL
-    add DL, 30h
-    mov AH, 02h
-    int 21h
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;  Fin du programme
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-fin:
-     mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
-     mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
-     int 21h
-
-code    ends               ; Fin du segment de code
+code    ends ; Fin du segment de code
 end prog
