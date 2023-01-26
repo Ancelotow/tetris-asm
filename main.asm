@@ -25,8 +25,8 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Autres données
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    cXX DW 75           ; Coordonée X  de la pièce courante
-    cYY DW 5            ; Coordonée Y de la pièce courante
+    cXX DW 150           ; Coordonée X  de la pièce courante
+    cYY DW 20            ; Coordonée Y de la pièce courante
     cCol DB 42          ; Couleur de la pièce courante
     cBlocks DW 0        ; Block courant
     cBlocksWidth DB 0   ; Largeur du block courant
@@ -168,10 +168,10 @@ print_color:
 ;  Affiche le rectangle avec les pièces qui y sont contenu
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 drawLand:
-    mov Rx, 0
-    mov Ry, 0
-    mov Rw, 150
-    mov Rh, 175
+    mov Rx, 130
+    mov Ry, 20
+    mov Rw, 60
+    mov Rh, 160
     mov col, 7
     call Rectangle
     call drop_block
