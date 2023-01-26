@@ -79,11 +79,14 @@ get_color:
 drop_block:
     cmp isColision, 0
     je drop_block_move
-    ret
+    mov cXX, 150
+    mov cYY, 20
+    call get_random_blocks
     drop_block_move:
         add cYY, 1
         call draw_blocks
         ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Fin du programme
@@ -138,6 +141,7 @@ get_colision:
         je end_move_down
         inc cWidth
         inc loopX
+        mov cHeight, 0
         mov AX, cYY
         mov loopY, AX
         jmp loop_vertical_compare
