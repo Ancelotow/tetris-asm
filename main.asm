@@ -20,7 +20,7 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Paramètres pour move_down
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    isColision DB 0
+    isColision DB 0         ;detecte collision
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Autres données
@@ -32,10 +32,10 @@ donnees segment public    ; Segment de donnees
     cBlocksWidth DB 0   ; Largeur du block courant
     cBlocksHeight DB 0  ; Hauteur du block courant
 
-    cWidth DB 0
-    cHeight DB 0
-    loopY DW 0
-    loopX DW 0
+    cWidth DB 0         ;current largeur
+    cHeight DB 0        ;current hauteur
+    loopY DW 0          ;coordonnée de comparaison
+    loopX DW 0          ;coordonnée de comparaison
     incr DW 0
     result DB 0
 donnees ends
@@ -96,11 +96,11 @@ end_loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_colision:
     mov AX, cYY
-    mov loopY, AX
+    mov loopY, AX                   
     mov AX, cXX
-    mov loopX, AX
-    mov cWidth, 0
-    mov cHeight, 0
+    mov loopX, AX                   
+    mov cWidth, 0                   
+    mov cHeight, 0                  
     mov isColision, 0
     jmp loop_vertical_compare
 
