@@ -32,6 +32,7 @@ donnees segment public    ; Segment de donnees
     cBlocksWidth DB 0   ; Largeur du block courant
     cBlocksHeight DB 0  ; Hauteur du block courant
 
+    nbLoop DB 0         ; nombre de tour de la pièce courante
     cWidth DB 0         ;current largeur
     cHeight DB 0        ;current hauteur
     loopY DW 0          ;coordonnée de comparaison
@@ -58,7 +59,7 @@ boucle:
     cmp userinput, 'a'
     je end_loop
     call get_colision
-    mov tempo, 10
+    mov tempo, 5
     call sleep
     jmp  boucle
 
@@ -79,10 +80,14 @@ get_color:
 drop_block:
     cmp isColision, 0
     je drop_block_move
+    cmp nbLoop, 1
+    je end_loop
+    mov nbLoop, 0
     mov cXX, 150
     mov cYY, 20
     call get_random_blocks
     drop_block_move:
+        inc nbLoop
         add cYY, 1
         call draw_blocks
         ret
