@@ -141,6 +141,7 @@ rle014 DB 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
 rle015 DB 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
 
 
+
 donnees ends   ; ---- Fin Segment de donnees-----
 
 code    segment public    ; Segment de code
@@ -247,6 +248,8 @@ get_block_from_code:
         mov blockHeight, AL
         mov blockColor, 2
         ret
+
+
 
 code    ends ; Fin du segment de code
 end prog

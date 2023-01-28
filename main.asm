@@ -39,6 +39,13 @@ donnees segment public    ; Segment de donnees
     loopX DW 0          ;coordonnée de comparaison
     incr DW 0
     result DB 0
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données utilisée dans la fonction de dessein
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    tabWidth DW 0
+    tabLength DW 0
+    tabCurrentWidth DW 0
 donnees ends
 
 code    segment public    ; Segment de code
@@ -47,8 +54,14 @@ assume  cs:code,ds:donnees,es:code,ss:pile
 prog:
     mov AX, donnees
 	mov DS, AX
-    call Video13h
     call get_random_blocks
+	call draw_block
+	mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
+    mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
+    int 21h
+
+    ;call Video13h
+   ; call get_random_blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
@@ -78,10 +91,9 @@ get_color:
 ; Fait descendre le block s'il n'y a pas de colisions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 drop_block:
+    call draw_block
     cmp isColision, 0
     je drop_block_move
-    cmp nbLoop, 1
-    je end_loop
     mov nbLoop, 0
     mov cXX, 150
     mov cYY, 20
@@ -89,7 +101,7 @@ drop_block:
     drop_block_move:
         inc nbLoop
         add cYY, 1
-        call draw_blocks
+        call draw_block
         ret
 
 
@@ -154,7 +166,7 @@ get_colision:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Dessine le block courant
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-draw_blocks:
+draw_blocks_old:
     mov AX, cXX
     mov hX, AX
     mov AX, cYY
@@ -204,6 +216,52 @@ get_random_blocks:
     mov AL, blockColor
     mov cCol, AL
     ret
+
+draw_block:
+    ; Récupération de la width du block
+
+    mov BX, cBlocks
+    mov AX, [BX]
+    mov tabWidth, AX
+
+    ; Récupération du nombre total de caractère dans le block
+    add BX, 2
+    mov AX, [BX]
+    mov tabLength, AX
+
+    add BX, 2
+    mov CX, 0
+    mov tabCurrentWidth, 1
+    loop_draw_block:
+        mov AX, [BX]
+        mov DX, AX
+        add DX, 48
+        mov AH, 02h
+        int 21h
+
+        mov AX, tabWidth
+        cmp AX, tabCurrentWidth
+        je draw_block_jump
+        inc tabCurrentWidth
+
+        loop_draw_block_continue:
+            inc BX
+            inc CX
+            cmp CX, tabLength
+            jne loop_draw_block
+            jmp draw_block_end
+
+    draw_block_jump:
+        mov tabCurrentWidth, 1
+        mov DL, 10
+        mov AH, 02h
+        int 21h
+        jmp loop_draw_block_continue
+
+    draw_block_end:
+        ret
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;  Fin du programme
