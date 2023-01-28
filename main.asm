@@ -26,7 +26,7 @@ donnees segment public    ; Segment de donnees
     ; Autres données
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
     cXX DW 150           ; Coordonée X  de la pièce courante
-    cYY DW 20            ; Coordonée Y de la pièce courante
+    cYY DW 25            ; Coordonée Y de la pièce courante
     cCol DB 42          ; Couleur de la pièce courante
     cBlocks DW 0        ; Block courant
     cBlocksWidth DB 0   ; Largeur du block courant
@@ -44,6 +44,8 @@ donnees segment public    ; Segment de donnees
     ; Données utilisée dans la fonction de dessein
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     tabWidth DW 0
+    tabRow DW 0
+    tabCurrentLenght DW 0
     tabLength DW 0
     tabCurrentWidth DW 0
 donnees ends
@@ -54,14 +56,8 @@ assume  cs:code,ds:donnees,es:code,ss:pile
 prog:
     mov AX, donnees
 	mov DS, AX
+    call Video13h
     call get_random_blocks
-	call draw_block
-	mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
-    mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
-    int 21h
-
-    ;call Video13h
-   ; call get_random_blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
@@ -80,7 +76,7 @@ boucle:
 ; Récupère la couleur aux cordonnées pX et pY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_color:
-    mov ah,0Dh
+    mov ah, 0Dh
     mov CX, pX
     mov DX, pY
     int 10H
@@ -96,7 +92,7 @@ drop_block:
     je drop_block_move
     mov nbLoop, 0
     mov cXX, 150
-    mov cYY, 20
+    mov cYY, 25
     call get_random_blocks
     drop_block_move:
         inc nbLoop
@@ -219,7 +215,6 @@ get_random_blocks:
 
 draw_block:
     ; Récupération de la width du block
-
     mov BX, cBlocks
     mov AX, [BX]
     mov tabWidth, AX
@@ -230,35 +225,66 @@ draw_block:
     mov tabLength, AX
 
     add BX, 2
-    mov CX, 0
+    mov tabCurrentLenght, 0
+    mov tabRow, 0
     mov tabCurrentWidth, 1
     loop_draw_block:
         mov AX, [BX]
-        mov DX, AX
-        add DX, 48
-        mov AH, 02h
-        int 21h
+        cmp AL, 0
+        je draw_block_black_pixel
+        call draw_block_draw_get_coordinates
 
-        mov AX, tabWidth
-        cmp AX, tabCurrentWidth
-        je draw_block_jump
-        inc tabCurrentWidth
+        loop_draw_block_draw_prixel:
+            call PaintPxl
 
-        loop_draw_block_continue:
+        loop_draw_block_afer_pixel_continue:
+            mov AX, tabWidth
+            cmp AX, tabCurrentWidth
+            je draw_block_jump
+            inc tabCurrentWidth
+
+        loop_draw_block_afer_jump_continue:
             inc BX
-            inc CX
-            cmp CX, tabLength
+            inc tabCurrentLenght
+            mov AX, tabCurrentLenght
+            cmp AX, tabLength
             jne loop_draw_block
             jmp draw_block_end
 
     draw_block_jump:
         mov tabCurrentWidth, 1
-        mov DL, 10
-        mov AH, 02h
-        int 21h
-        jmp loop_draw_block_continue
+        inc tabRow
+        jmp loop_draw_block_afer_jump_continue
+
+    draw_block_black_pixel:
+        call draw_block_draw_get_coordinates
+        mov AX, cCX
+        mov pX, AX
+        mov AX, cDX
+        mov pY, AX
+        call get_color
+        mov AL, cCol
+        cmp retCol, AL
+        je loop_draw_block_draw_prixel
+        cmp retCol, 0
+        je loop_draw_block_draw_prixel
+        jmp loop_draw_block_afer_pixel_continue
 
     draw_block_end:
+        ret
+
+    draw_block_draw_get_coordinates:
+        ; Ajout de la couleur
+        mov col, AL
+        ; Coordonnées X
+        mov AX, cXX
+        add AX, tabCurrentWidth
+        dec AX
+        mov cCX, AX
+        ; Coordonnées Y
+        mov AX, cYY
+        add AX, tabRow
+        mov cDX, AX
         ret
 
 
