@@ -37,6 +37,7 @@ donnees segment public    ; Segment de donnees
     cHeight DB 0        ;current hauteur
     loopY DW 0          ;coordonnée de comparaison
     loopX DW 0          ;coordonnée de comparaison
+    previousIsColor DB 0
     incr DW 0
     result DB 0
 
@@ -154,12 +155,14 @@ end_loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_colision:
     mov AX, cYY
-    mov loopY, AX                   
+    mov loopY, AX
     mov AX, cXX
-    mov loopX, AX                   
-    mov cWidth, 0                   
-    mov cHeight, 0                  
+    mov loopX, AX
+    inc loopX
+    mov cWidth, 3
+    mov cHeight, 0
     mov isColision, 0
+    mov previousIsColor, 0
     jmp loop_vertical_compare
 
     loop_vertical_compare:
@@ -170,9 +173,11 @@ get_colision:
         call get_color ; Récupère la couleur
         mov AL, cCol
         cmp retCol, AL ; Vérifie que c'est la même couleur que le pixel courant
-        je loopback_vertical
+        je loop_vertical_compare_color
         cmp retCol, 0
         je loop_vertical_compare_black
+        cmp previousIsColor, 1
+        jne loopback_vertical
         mov isColision, 1
         jmp end_move_down
 
@@ -184,13 +189,19 @@ get_colision:
         inc loopY
         jmp loop_vertical_compare
 
+    loop_vertical_compare_color:
+        mov previousIsColor, 1
+        jmp loopback_vertical
+
     loop_vertical_compare_black:
+        mov previousIsColor, 0
         mov AL, cBlocksHeight
         cmp cHeight, AL
         je loop_vertical_compare_change_column
         jmp loopback_vertical
 
     loop_vertical_compare_change_column:
+        mov previousIsColor, 0
         mov AL, cBlocksWidth
         cmp cWidth, AL
         je end_move_down
@@ -229,7 +240,7 @@ print_color:
 drawLand:
     mov Rx, 130
     mov Ry, 20
-    mov Rw, 60
+    mov Rw, 61
     mov Rh, 160
     mov col, 7
     call Rectangle
