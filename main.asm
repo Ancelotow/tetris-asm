@@ -48,6 +48,11 @@ donnees segment public    ; Segment de donnees
     tabCurrentLenght DW 0
     tabLength DW 0
     tabCurrentWidth DW 0
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données utilisée dans les fonctions move
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    nbLoopMove DB 0
 donnees ends
 
 code    segment public    ; Segment de code
@@ -64,13 +69,50 @@ prog:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 boucle:
     call drawLand
-    call PeekKey
-    cmp userinput, 'a'
-    je end_loop
+    call get_userinput
     call get_colision
     mov tempo, 5
     call sleep
     jmp  boucle
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Execution des commandes saisies par le joueur
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+get_userinput:
+    call PeekKey
+    cmp userinput, 'a'
+    je end_loop
+    cmp userinput, 'q'
+    je move_left
+    cmp userinput, 'd'
+    je move_right
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Déplace le block à gauche
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+move_left:
+    mov nbLoopMove, 0
+    move_left_loop:
+        inc nbLoopMove
+        dec cXX
+        call draw_block
+        cmp nbLoopMove, 5
+        jne move_left_loop
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Déplace le block à droite
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+move_right:
+    mov nbLoopMove, 0
+    move_right_loop:
+        inc nbLoopMove
+        inc cXX
+        call draw_block
+        cmp nbLoopMove, 5
+        jne move_right_loop
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Récupère la couleur aux cordonnées pX et pY
@@ -213,6 +255,9 @@ get_random_blocks:
     mov cCol, AL
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Affiche le block courant
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 draw_block:
     ; Récupération de la width du block
     mov BX, cBlocks
