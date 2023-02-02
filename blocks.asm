@@ -13,14 +13,11 @@ public rhodeCleveland
 public block
 public codeBlock
 public get_block_from_code
-public turn_block
-public idTurn
 
 donnees segment public   ;--- Segment de donnees ---
 
 codeBlock DB 0
 block DW 0
-idTurn DB 0
 
 rickyOrange DW  17, 187, 42
 rio000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -82,6 +79,29 @@ her003 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 her004 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 her005 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 
+heroVertical DW 7, 147, 3
+hev000 DB 0, 0, 0, 0, 0, 0, 0
+hev001 DB 0, 3, 3, 3, 3, 3, 0
+hev002 DB 0, 3, 3, 3, 3, 3, 0
+hev003 DB 0, 3, 3, 3, 3, 3, 0
+hev004 DB 0, 3, 3, 3, 3, 3, 0
+hev005 DB 0, 3, 3, 3, 3, 3, 0
+hev011 DB 0, 3, 3, 3, 3, 3, 0
+hev012 DB 0, 3, 3, 3, 3, 3, 0
+hev013 DB 0, 3, 3, 3, 3, 3, 0
+hev014 DB 0, 3, 3, 3, 3, 3, 0
+hev015 DB 0, 3, 3, 3, 3, 3, 0
+hev021 DB 0, 3, 3, 3, 3, 3, 0
+hev022 DB 0, 3, 3, 3, 3, 3, 0
+hev023 DB 0, 3, 3, 3, 3, 3, 0
+hev024 DB 0, 3, 3, 3, 3, 3, 0
+hev025 DB 0, 3, 3, 3, 3, 3, 0
+hev031 DB 0, 3, 3, 3, 3, 3, 0
+hev032 DB 0, 3, 3, 3, 3, 3, 0
+hev033 DB 0, 3, 3, 3, 3, 3, 0
+hev034 DB 0, 3, 3, 3, 3, 3, 0
+hev035 DB 0, 3, 3, 3, 3, 3, 0
+
 cleveland DW  17, 187, 4
 cle000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 cle001 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
@@ -109,6 +129,7 @@ rle014 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rle015 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 
 list_blocks DW rickyOrange, rickyBlue, teewee, smashboy, hero, cleveland, rhodeCleveland
+lb000 DW heroVertical, heroVertical, heroVertical, heroVertical, heroVertical, heroVertical, heroVertical
 
 donnees ends   ; ---- Fin Segment de donnees-----
 
@@ -127,13 +148,6 @@ get_block_from_code:
     mul BX
     mov BX, offset list_blocks
     add BX, AX
-    mov AX, [BX]
-    mov block, AX
-    ret
-
-turn_block:
-    mov BX, offset list_blocks
-    add BX, 2
     mov AX, [BX]
     mov block, AX
     ret

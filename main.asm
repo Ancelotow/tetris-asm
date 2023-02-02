@@ -135,8 +135,8 @@ turn_move:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 turn_right:
     call erase_block
-    mov idTurn, 2
-    call turn_block
+    mov codeBlock, 8
+    call get_block_from_code
     mov BX, block
     mov cBlocks, BX
 

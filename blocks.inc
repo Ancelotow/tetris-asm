@@ -5,11 +5,9 @@
 
 ;==== exported functions ====
 extrn get_block_from_code:near  ; codeBlock >>
-extrn turn_block: near          ; idTurn >>
 
 ;==== exported variables ====
 extrn codeBlock:byte            ; >> get_block_from_code
-extrn idTurn:byte               ; >> turn_block
 extrn block:word                ; << get_block_from_code, turn_block
 extrn rickyBlue:word
 extrn rickyOrange:word
