@@ -10,40 +10,19 @@ public hero
 public cleveland
 public rhodeCleveland
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Tailles des blocks
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-public rickyWidth
-public rickyHeight
-public teeweeWidth
-public teeweeHeight
-public smashboyWidth
-public smashboyHeight
-public heroWidth
-public heroHeight
-public clevelandWidth
-public clevelandHeight
-public rhodeClevelandWidth
-public rhodeClevelandHeight
-
+public block
 public codeBlock
-public blockHeight
-public blockWidth
-public currentBlock
 public get_block_from_code
-public blockColor
+public turn_block
+public idTurn
 
 donnees segment public   ;--- Segment de donnees ---
 
 codeBlock DB 0
-blockWidth DB 0
-blockHeight DB 0
-currentBlock DW 0
-blockColor DB 0
+block DW 0
+idTurn DB 0
 
-rickyWidth DB 17
-rickyHeight DB 11
-rickyOrange DW  17, 187
+rickyOrange DW  17, 187, 42
 rio000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rio001 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 42, 42, 42, 0
 rio002 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 42, 42, 42, 0
@@ -56,7 +35,7 @@ rio013 DB 0, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 0
 rio014 DB 0, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 0
 rio015 DB 0, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 0
 
-rickyBlue DW  17, 187
+rickyBlue DW  17, 187, 1
 rib000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rib001 DB 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rib002 DB 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -69,9 +48,7 @@ rib013 DB 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
 rib014 DB 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
 rib015 DB 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
 
-teeweeWidth DB 17
-teeweeHeight DB 11
-teewee DW  17, 187
+teewee DW  17, 187, 5
 tew000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 tew001 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
 tew002 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
@@ -84,10 +61,7 @@ tew013 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 tew014 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 tew015 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 
-
-smashboyWidth DB 12
-smashboyHeight DB 11
-smashboy DW  12, 132
+smashboy DW  12, 132, 6
 smb000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 smb001 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
 smb002 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
@@ -100,9 +74,7 @@ smb013 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
 smb014 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
 smb015 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
 
-heroWidth DB 22
-heroHeight DB 6
-hero DW  22, 132
+hero DW  22, 132, 3
 her000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 her001 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 her002 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
@@ -110,9 +82,7 @@ her003 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 her004 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 her005 DB 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 
-clevelandWidth DB 17
-clevelandHeight DB 11
-cleveland DW  17, 187
+cleveland DW  17, 187, 4
 cle000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 cle001 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
 cle002 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
@@ -125,9 +95,7 @@ cle013 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 cle014 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 cle015 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 
-rhodeClevelandWidth DB 17
-rhodeClevelandHeight DB 11
-rhodeCleveland DW 17, 187
+rhodeCleveland DW 17, 187, 2
 rle000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 rle001 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
 rle002 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
@@ -140,7 +108,7 @@ rle013 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rle014 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rle015 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 
-
+list_blocks DW rickyOrange, rickyBlue, teewee, smashboy, hero, cleveland, rhodeCleveland
 
 donnees ends   ; ---- Fin Segment de donnees-----
 
@@ -153,102 +121,22 @@ prog:
     int 21h
 
 get_block_from_code:
-    cmp codeBlock, 0
-    je get_block_hero
-    cmp codeBlock, 1
-    je get_block_rickyBlue
-    cmp codeBlock, 2
-    je get_block_rickyOrange
-    cmp codeBlock, 3
-    je get_block_teewee
-    jmp get_block_from_code_continue
+    mov AX, 2
+    mov BX, 0
+    mov BL, codeBlock
+    mul BX
+    mov BX, offset list_blocks
+    add BX, AX
+    mov AX, [BX]
+    mov block, AX
     ret
 
-    ; HERO
-    get_block_hero:
-        mov BX, offset hero
-        mov currentBlock, BX
-        mov AL, heroWidth
-        mov blockWidth, AL
-        mov AL, heroHeight
-        mov blockHeight, AL
-        mov blockColor, 3
-        ret
-
-    ; RICKY BLUE
-    get_block_rickyBlue:
-        mov BX, offset rickyBlue
-        mov currentBlock, BX
-        mov AL, rickyWidth
-        mov blockWidth, AL
-        mov AL, rickyHeight
-        mov blockHeight, AL
-        mov blockColor, 1
-        ret
-
-    ; RICKY ORANGE
-    get_block_rickyOrange:
-        mov BX, offset rickyOrange
-        mov currentBlock, BX
-        mov AL, rickyWidth
-        mov blockWidth, AL
-        mov AL, rickyHeight
-        mov blockHeight, AL
-        mov blockColor, 42
-        ret
-
-    ; TEEWEE
-    get_block_teewee:
-        mov BX, offset teewee
-        mov currentBlock, BX
-        mov AL, teeweeWidth
-        mov blockWidth, AL
-        mov AL, teeweeHeight
-        mov blockHeight, AL
-        mov blockColor, 5
-        ret
-
-
-    get_block_from_code_continue:
-        cmp codeBlock, 4
-        je get_block_smashboy
-        cmp codeBlock, 5
-        je get_block_cleveland
-        jmp get_block_rhodeCleveland
-
-    ; SMASHBOY
-    get_block_smashboy:
-        mov BX, offset smashboy
-        mov currentBlock, BX
-        mov AL, smashboyWidth
-        mov blockWidth, AL
-        mov AL, smashboyHeight
-        mov blockHeight, AL
-        mov blockColor, 6
-        ret
-
-    ; CLEVELAND
-    get_block_cleveland:
-        mov BX, offset cleveland
-        mov currentBlock, BX
-        mov AL, clevelandWidth
-        mov blockWidth, AL
-        mov AL, clevelandHeight
-        mov blockHeight, AL
-        mov blockColor, 4
-        ret
-
-    ; RHODE CLEVELAND
-    get_block_rhodeCleveland:
-        mov BX, offset rhodeCleveland
-        mov currentBlock, BX
-        mov AL, rhodeClevelandWidth
-        mov blockWidth, AL
-        mov AL, rhodeClevelandHeight
-        mov blockHeight, AL
-        mov blockColor, 2
-        ret
-
+turn_block:
+    mov BX, offset list_blocks
+    add BX, 2
+    mov AX, [BX]
+    mov block, AX
+    ret
 
 
 code    ends ; Fin du segment de code

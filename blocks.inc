@@ -5,13 +5,12 @@
 
 ;==== exported functions ====
 extrn get_block_from_code:near  ; codeBlock >>
+extrn turn_block: near          ; idTurn >>
 
 ;==== exported variables ====
-extrn codeBlock:byte
-extrn blockHeight:byte          ; << get_block_from_code
-extrn blockWidth:byte           ; << get_block_from_code
-extrn currentBlock:word         ; << get_block_from_code
-extrn blockColor:byte           ; << get_block_from_code
+extrn codeBlock:byte            ; >> get_block_from_code
+extrn idTurn:byte               ; >> turn_block
+extrn block:word                ; << get_block_from_code, turn_block
 extrn rickyBlue:word
 extrn rickyOrange:word
 extrn teewee:word
@@ -19,16 +18,4 @@ extrn smashboy:word
 extrn hero:word
 extrn cleveland:word
 extrn rhodeCleveland:word
-extrn rickyWidth:byte
-extrn rickyHeight:byte
-extrn teeweeWidth:byte
-extrn teeweeHeight:byte
-extrn smashboyWidth:byte
-extrn smashboyHeight:byte
-extrn heroWidth:byte
-extrn heroHeight:byte
-extrn clevelandWidth:byte
-extrn clevelandHeight:byte
-extrn rhodeClevelandWidth:byte
-extrn rhodeClevelandHeight:byte
 ;=============================

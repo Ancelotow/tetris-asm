@@ -76,17 +76,27 @@ boucle:
     call sleep
     jmp  boucle
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Fin du programme
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+end_game:
+    call VideoCMD
+    mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
+    mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
+    int 21h
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Execution des commandes saisies par le joueur
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_userinput:
     call PeekKey
     cmp userinput, 'a'
-    je end_loop
+    je end_game
     cmp userinput, 'q'
     je move_left
     cmp userinput, 'd'
     je move_right
+    jmp turn_move
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -115,6 +125,97 @@ move_right:
         jne move_right_loop
     ret
 
+turn_move:
+   cmp userinput, 'e'
+   je turn_right
+   ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Tourne le block à droite
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+turn_right:
+    call erase_block
+    mov idTurn, 2
+    call turn_block
+    mov BX, block
+    mov cBlocks, BX
+
+    ;Récupération de la taille du tableau
+    mov BX, cBlocks
+    mov AX, [BX]
+    mov cBlocksWidth, AL
+
+    ;Récupération de la hauteur du tableau
+    add BX, 2
+    mov AX, [BX]
+    mov CL, cBlocksWidth
+    div CL
+    mov cBlocksHeight, AL
+
+    ; Récupération du code couleur
+    add BX, 2
+    mov AX, [BX]
+    mov cCol, AL
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Efface le block avant de le tourner
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+erase_block:
+    ; Récupération de la width du block
+    mov BX, cBlocks
+    mov AX, [BX]
+    mov tabWidth, AX
+
+    ; Récupération du nombre total de caractère dans le block
+    add BX, 2
+    mov AX, [BX]
+    mov tabLength, AX
+
+    add BX, 4
+    mov tabCurrentLenght, 0
+    mov tabRow, 0
+    mov tabCurrentWidth, 1
+    loop_erase_block:
+        mov AX, [BX]
+        cmp AL, 0
+        call erase_block_draw_get_coordinates
+        call PaintPxl
+        mov AX, tabWidth
+        cmp AX, tabCurrentWidth
+        je erase_block_jump
+        inc tabCurrentWidth
+
+        loop_erase_block_afer_jump_continue:
+            inc BX
+            inc tabCurrentLenght
+            mov AX, tabCurrentLenght
+            cmp AX, tabLength
+            jne loop_erase_block
+            jmp erase_block_end
+
+    erase_block_jump:
+        mov tabCurrentWidth, 1
+        inc tabRow
+        jmp loop_erase_block_afer_jump_continue
+
+    erase_block_end:
+        ret
+
+    erase_block_draw_get_coordinates:
+        ; Ajout de la couleur
+        mov col, 0
+        ; Coordonnées X
+        mov AX, cXX
+        add AX, tabCurrentWidth
+        dec AX
+        mov cCX, AX
+        ; Coordonnées Y
+        mov AX, cYY
+        add AX, tabRow
+        mov cDX, AX
+        ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Récupère la couleur aux cordonnées pX et pY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,13 +243,6 @@ drop_block:
         add cYY, 1
         call draw_block
         ret
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Fin du programme
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-end_loop:
-        jmp fin
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Vérifi s'il y a une colision ou non
@@ -256,13 +350,24 @@ get_random_blocks:
     mov AX, reste
     mov codeBlock, AL
     call get_block_from_code
-    mov BX, currentBlock
+    mov BX, block
     mov cBlocks, BX
-    mov AL, blockWidth
+
+    ;Récupération de la taille du tableau
+    mov BX, cBlocks
+    mov AX, [BX]
     mov cBlocksWidth, AL
-    mov AL, blockHeight
+
+    ;Récupération de la hauteur du tableau
+    add BX, 2
+    mov AX, [BX]
+    mov CL, cBlocksWidth
+    div CL
     mov cBlocksHeight, AL
-    mov AL, blockColor
+
+    ; Récupération du code couleur
+    add BX, 2
+    mov AX, [BX]
     mov cCol, AL
     ret
 
@@ -280,7 +385,7 @@ draw_block:
     mov AX, [BX]
     mov tabLength, AX
 
-    add BX, 2
+    add BX, 4
     mov tabCurrentLenght, 0
     mov tabRow, 0
     mov tabCurrentWidth, 1
@@ -343,16 +448,6 @@ draw_block:
         mov cDX, AX
         ret
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;  Fin du programme
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-fin:
-    call VideoCMD
-    mov AH,4Ch      ; 4Ch = fonction de fin de prog DOS
-    mov AL,00h      ; code de sortie 0 (tout s'est bien passe)
-    int 21h
 
 code    ends               ; Fin du segment de code
 end prog                 ; Fin du programme
