@@ -31,6 +31,9 @@ donnees segment public    ; Segment de donnees
     cBlocks DW 0        ; Block courant
     cBlocksWidth DB 0   ; Largeur du block courant
     cBlocksHeight DB 0  ; Hauteur du block courant
+    fBlocks DW 0        ; Block futur
+    fXX DW 257           ; Coordonée X  de la pièce courante
+    fYY DW 78            ; Coordonée Y de la pièce courante
 
     nbLoop DB 0         ; nombre de tour de la pièce courante
     cWidth DB 0         ;current largeur
@@ -42,7 +45,7 @@ donnees segment public    ; Segment de donnees
     result DB 0
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données utilisée dans la fonction de dessein
+    ; Données utilisée dans la fonction de dessin
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     tabWidth DW 0
     tabRow DW 0
@@ -64,12 +67,14 @@ prog:
 	mov DS, AX
     call Video13h
     call get_random_blocks
+    call get_other_blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 boucle:
     call drawLand
+    call draw_futurBlock
     call get_userinput
     call get_colision
     mov tempo, 5
@@ -126,9 +131,9 @@ move_right:
     ret
 
 turn_move:
-   cmp userinput, 'e'
-   je turn_right
-   ret
+    cmp userinput, 'e'
+    je turn_right
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Tourne le block à droite
@@ -237,7 +242,9 @@ drop_block:
     mov nbLoop, 0
     mov cXX, 150
     mov cYY, 25
-    call get_random_blocks
+    mov AX, fBlocks
+    mov cBlocks, AX
+    call get_other_blocks
     drop_block_move:
         inc nbLoop
         add cYY, 1
@@ -245,7 +252,7 @@ drop_block:
         ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Vérifi s'il y a une colision ou non
+; Vérifie s'il y a une colision ou non
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_colision:
     mov AX, cYY
@@ -310,11 +317,12 @@ get_colision:
 ; Dessine le block courant
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 draw_blocks_old:
-    mov AX, cXX
+;regarder pour remettre les pixels au noir avant d'affiché new piece
+    mov AX, fXX
     mov hX, AX
-    mov AX, cYY
+    mov AX, fYY
     mov hY, AX
-    mov BX, cBlocks
+    mov BX, fBlocks
     call drawIcon
     ret
 
@@ -342,7 +350,20 @@ drawLand:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;  Récupère un block aléatoirement
+;  Affiche le rectangle avec les futures pièces
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+draw_futurBlock:
+    mov Rx, 252
+    mov Ry, 70
+    mov Rw, 30
+    mov Rh, 25
+    mov col, 7
+    call Rectangle
+    call draw_blocks_old
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Récupère un block aléatoirement au début currentBlock
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_random_blocks:
     mov diviseur, 7
@@ -352,6 +373,18 @@ get_random_blocks:
     call get_block_from_code
     mov BX, block
     mov cBlocks, BX
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Prépare un block aléatoirement et le stocke dans fBlocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+get_other_blocks:
+    mov diviseur, 7
+    call get_random
+    mov AX, reste
+    mov codeBlock, AL
+    call get_block_from_code
+    mov BX, block
+    mov fBlocks, BX    
 
     ;Récupération de la taille du tableau
     mov BX, cBlocks
