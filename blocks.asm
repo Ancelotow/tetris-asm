@@ -115,7 +115,7 @@ cle013 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 cle014 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 cle015 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 
-clevelandVertical DW  17, 187, 4
+clevelandVertical DW  12, 192, 4
 clev000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 clev001 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0
 clev002 DB 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0
@@ -128,10 +128,10 @@ clev013 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 clev014 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 clev015 DB 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0
 clev021 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
-clev021 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
-clev021 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
-clev021 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
-clev021 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
+clev022 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
+clev023 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
+clev024 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
+clev025 DB 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0
 
 rhodeCleveland DW 17, 187, 2
 rle000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -146,8 +146,26 @@ rle013 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rle014 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rle015 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 
+rhodeClevelandVertical DW  12, 192, 2
+rlev000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+rlev001 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0
+rlev002 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0
+rlev003 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0
+rlev004 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0
+rlev005 DB 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0
+rlev011 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
+rlev012 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
+rlev013 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
+rlev014 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
+rlev015 DB 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0
+rlev021 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
+rlev022 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
+rlev023 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
+rlev024 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
+rlev025 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
+
 list_blocks DW rickyOrange, rickyBlue, teewee, smashboy, hero, cleveland, rhodeCleveland
-lb000 DW heroVertical, heroVertical, heroVertical, heroVertical, heroVertical, heroVertical, heroVertical
+lb000 DW rickyOrange, rickyBlue, teewee, smashboy, heroVertical, clevelandVertical, rhodeClevelandVertical
 
 donnees ends   ; ---- Fin Segment de donnees-----
 

@@ -34,6 +34,8 @@ donnees segment public    ; Segment de donnees
     fBlocks DW 0        ; Block futur
     fXX DW 257           ; Coordonée X  de la pièce courante
     fYY DW 78            ; Coordonée Y de la pièce courante
+    nbTurn DB 0
+    cCodeBlock DB 0
 
     nbLoop DB 0         ; nombre de tour de la pièce courante
     cWidth DB 0         ;current largeur
@@ -140,7 +142,9 @@ turn_move:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 turn_right:
     call erase_block
-    mov codeBlock, 8
+    mov AL, cCodeBlock
+    add AL, 7
+    mov codeBlock, AL
     call get_block_from_code
     mov BX, block
     mov cBlocks, BX
@@ -370,6 +374,7 @@ get_random_blocks:
     call get_random
     mov AX, reste
     mov codeBlock, AL
+    mov cCodeBlock, AL
     call get_block_from_code
     mov BX, block
     mov cBlocks, BX
