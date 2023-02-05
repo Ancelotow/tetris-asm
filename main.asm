@@ -32,16 +32,16 @@ donnees segment public    ; Segment de donnees
     cBlocksWidth DB 0   ; Largeur du block courant
     cBlocksHeight DB 0  ; Hauteur du block courant
     fBlocks DW 0        ; Block futur
-    fXX DW 257           ; Coordonée X  de la pièce courante
-    fYY DW 78            ; Coordonée Y de la pièce courante
+    fXX DW 257           ; Coordonée X  de la pièce future
+    fYY DW 78            ; Coordonée Y de la pièce future
     nbTurn DB 0
     cCodeBlock DB 0
 
     nbLoop DB 0         ; nombre de tour de la pièce courante
-    cWidth DB 0         ;current largeur
-    cHeight DB 0        ;current hauteur
-    loopY DW 0          ;coordonnée de comparaison
-    loopX DW 0          ;coordonnée de comparaison
+    cWidth DB 0         ; current largeur
+    cHeight DB 0        ; current hauteur
+    loopY DW 0          ; coordonnée de comparaison
+    loopX DW 0          ; coordonnée de comparaison
     previousIsColor DB 0
     incr DW 0
     result DB 0
@@ -49,11 +49,14 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données utilisée dans la fonction de dessin
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    tabX DW 0               ; Coordonée X pour le dessin
+    tabY DW 0               ; Coordonée Y pour le dessin
     tabWidth DW 0
     tabRow DW 0
     tabCurrentLenght DW 0
     tabLength DW 0
     tabCurrentWidth DW 0
+
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données utilisée dans les fonctions move
@@ -114,6 +117,10 @@ move_left:
     move_left_loop:
         inc nbLoopMove
         dec cXX
+        mov AX, cYY
+        mov tabY, AX
+        mov AX, cXX
+        mov tabX, AX
         call draw_block
         cmp nbLoopMove, 5
         jne move_left_loop
@@ -127,6 +134,10 @@ move_right:
     move_right_loop:
         inc nbLoopMove
         inc cXX
+        mov AX, cYY
+        mov tabY, AX
+        mov AX, cXX
+        mov tabX, AX
         call draw_block
         cmp nbLoopMove, 5
         jne move_right_loop
@@ -143,7 +154,7 @@ turn_move:
 turn_right:
     call erase_block
     mov AL, cCodeBlock
-    add AL, 7
+    add AL, 14
     mov codeBlock, AL
     call get_block_from_code
     mov BX, block
@@ -240,6 +251,10 @@ get_color:
 ; Fait descendre le block s'il n'y a pas de colisions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 drop_block:
+    mov AX, cYY
+    mov tabY, AX
+    mov AX, cXX
+    mov tabX, AX
     call draw_block
     cmp isColision, 0
     je drop_block_move
@@ -252,6 +267,10 @@ drop_block:
     drop_block_move:
         inc nbLoop
         add cYY, 1
+        mov AX, cYY
+        mov tabY, AX
+        mov AX, cXX
+        mov tabX, AX
         call draw_block
         ret
 
@@ -363,7 +382,11 @@ draw_futurBlock:
     mov Rh, 25
     mov col, 7
     call Rectangle
-    call draw_blocks_old
+    mov AX, fYY
+    mov tabY, AX
+    mov AX, fXX
+    mov tabX, AX
+    call draw_block
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -476,12 +499,12 @@ draw_block:
         ; Ajout de la couleur
         mov col, AL
         ; Coordonnées X
-        mov AX, cXX
+        mov AX, tabX
         add AX, tabCurrentWidth
         dec AX
         mov cCX, AX
         ; Coordonnées Y
-        mov AX, cYY
+        mov AX, tabY
         add AX, tabRow
         mov cDX, AX
         ret

@@ -58,6 +58,55 @@ tew013 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 tew014 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 tew015 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
 
+teeweeLeft DW  12, 192, 5
+tewl000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+tewl001 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl002 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl003 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl004 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl005 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl011 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewl012 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewl013 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewl014 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewl015 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewl021 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl022 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl023 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl024 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewl025 DB 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+
+teeweeDown DW  17, 187, 5
+tewd000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+tewd001 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewd002 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewd003 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewd004 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewd005 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewd011 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewd012 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewd013 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewd014 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+tewd015 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0
+
+teeweeRight DW  12, 192, 5
+tewr000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+tewr001 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr002 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr003 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr004 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr005 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr011 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewr012 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewr013 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewr014 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewr015 DB 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0
+tewr021 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr022 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr023 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr024 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+tewr025 DB 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0
+
 smashboy DW  12, 132, 6
 smb000 DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 smb001 DB 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0
@@ -165,7 +214,9 @@ rlev024 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 rlev025 DB 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0
 
 list_blocks DW rickyOrange, rickyBlue, teewee, smashboy, hero, cleveland, rhodeCleveland
-lb000 DW rickyOrange, rickyBlue, teewee, smashboy, heroVertical, clevelandVertical, rhodeClevelandVertical
+lb000 DW rickyOrange, rickyBlue, teeweeLeft, smashboy, heroVertical, clevelandVertical, rhodeClevelandVertical
+lb001 DW rickyOrange, rickyBlue, teeweeDown, smashboy, hero, cleveland, rhodeCleveland
+lb002 DW rickyOrange, rickyBlue, teeweeRight, smashboy, heroVertical, clevelandVertical, rhodeClevelandVertical
 
 donnees ends   ; ---- Fin Segment de donnees-----
 
