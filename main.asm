@@ -56,6 +56,8 @@ donnees segment public    ; Segment de donnees
     tabCurrentLenght DW 0
     tabLength DW 0
     tabCurrentWidth DW 0
+    blockToDraw DW 0
+    colorToDraw DB 0
 
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -121,6 +123,8 @@ move_left:
         mov tabY, AX
         mov AX, cXX
         mov tabX, AX
+        mov BX, cBlocks
+        mov blockToDraw, BX
         call draw_block
         cmp nbLoopMove, 5
         jne move_left_loop
@@ -138,6 +142,8 @@ move_right:
         mov tabY, AX
         mov AX, cXX
         mov tabX, AX
+        mov BX, cBlocks
+        mov blockToDraw, BX
         call draw_block
         cmp nbLoopMove, 5
         jne move_right_loop
@@ -255,6 +261,8 @@ drop_block:
     mov tabY, AX
     mov AX, cXX
     mov tabX, AX
+    mov BX, cBlocks
+    mov blockToDraw, BX
     call draw_block
     cmp isColision, 0
     je drop_block_move
@@ -386,6 +394,8 @@ draw_futurBlock:
     mov tabY, AX
     mov AX, fXX
     mov tabX, AX
+    mov BX, fBlocks
+    mov blockToDraw, BX
     call draw_block
     ret
 
@@ -437,7 +447,7 @@ get_other_blocks:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 draw_block:
     ; Récupération de la width du block
-    mov BX, cBlocks
+    mov BX, blockToDraw
     mov AX, [BX]
     mov tabWidth, AX
 
@@ -446,7 +456,11 @@ draw_block:
     mov AX, [BX]
     mov tabLength, AX
 
-    add BX, 4
+    add BX, 2
+    mov AX, [BX]
+    mov colorToDraw, AL
+
+    add BX, 2
     mov tabCurrentLenght, 0
     mov tabRow, 0
     mov tabCurrentWidth, 1
@@ -485,7 +499,7 @@ draw_block:
         mov AX, cDX
         mov pY, AX
         call get_color
-        mov AL, cCol
+        mov AL, colorToDraw
         cmp retCol, AL
         je loop_draw_block_draw_prixel
         cmp retCol, 0
