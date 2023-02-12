@@ -20,13 +20,13 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données pour "move_down"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    isColision DB 0         ;detecte collision
+    isColision DB 0     ;detecte collision
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données pour "draw_block" et "erase_block"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    tabX DW 0               ; Coordonée X pour le dessin
-    tabY DW 0               ; Coordonée Y pour le dessin
+    tabX DW 0           ; Coordonée X pour le dessin
+    tabY DW 0           ; Coordonée Y pour le dessin
     tabWidth DW 0
     tabRow DW 0
     tabCurrentLenght DW 0
@@ -53,8 +53,8 @@ donnees segment public    ; Segment de donnees
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données sur le block courant
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    cXX DW 150           ; Coordonée X  de la pièce courante
-    cYY DW 25            ; Coordonée Y de la pièce courante
+    cXX DW 150          ; Coordonée X  de la pièce courante
+    cYY DW 25           ; Coordonée Y de la pièce courante
     cCol DB 42          ; Couleur de la pièce courante
     cBlocks DW 0        ; Block courant
     cBlocksWidth DB 0   ; Largeur du block courant
@@ -65,11 +65,11 @@ donnees segment public    ; Segment de donnees
     ; Données sur le prochain block
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     fBlocks DW 0        ; Block futur
-    fXX DW 257           ; Coordonée X  de la pièce future
-    fYY DW 78            ; Coordonée Y de la pièce future
+    fXX DW 257          ; Coordonée X  de la pièce future
+    fYY DW 78           ; Coordonée Y de la pièce future
     fCodeBlock DB 0
 
-    nbTurn DB 0
+    turnMul DB 1        ; Multiplicateur pour tourner les pièces
 donnees ends
 
 code    segment public    ; Segment de code
@@ -173,30 +173,40 @@ turn_right:
     mov blockToDraw, BX
     call erase_block
 
-    mov AL, cCodeBlock
-    add AL, 14
-    mov codeBlock, AL
-    call get_block_from_code
-    mov BX, block
-    mov cBlocks, BX
+    cmp turnMul, 3
+    jne continue_turn_right
+    mov turnMul, 1
+    continue_turn_right:
+        mov AL, 7
+        mov BL, turnMul
+        mul BL
+        inc turnMul
+        mov DL, AL
 
-    ;Récupération de la taille du tableau
-    mov BX, cBlocks
-    mov AX, [BX]
-    mov cBlocksWidth, AL
+        mov AL, cCodeBlock
+        add AL, DL
+        mov codeBlock, AL
+        call get_block_from_code
+        mov BX, block
+        mov cBlocks, BX
 
-    ;Récupération de la hauteur du tableau
-    add BX, 2
-    mov AX, [BX]
-    mov CL, cBlocksWidth
-    div CL
-    mov cBlocksHeight, AL
+        ;Récupération de la taille du tableau
+        mov BX, cBlocks
+        mov AX, [BX]
+        mov cBlocksWidth, AL
 
-    ; Récupération du code couleur
-    add BX, 2
-    mov AX, [BX]
-    mov cCol, AL
-    ret
+        ;Récupération de la hauteur du tableau
+        add BX, 2
+        mov AX, [BX]
+        mov CL, cBlocksWidth
+        div CL
+        mov cBlocksHeight, AL
+
+        ; Récupération du code couleur
+        add BX, 2
+        mov AX, [BX]
+        mov cCol, AL
+        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Efface le block passé en paramètre
@@ -289,6 +299,7 @@ drop_block:
     mov cBlocks, BX
     mov AL, fCodeBlock
     mov cCodeBlock, AL
+    mov turnMul, 1
 
     ; Affiche le prochain block
     call erase_next_blocks
