@@ -69,7 +69,7 @@ donnees segment public    ; Segment de donnees
     fYY DW 78           ; Coordonée Y de la pièce future
     fCodeBlock DB 0
 
-    turnMul DB 1        ; Multiplicateur pour tourner les pièces
+    turnMul DB 0        ; Multiplicateur pour tourner les pièces
 donnees ends
 
 code    segment public    ; Segment de code
@@ -173,9 +173,9 @@ turn_right:
     mov blockToDraw, BX
     call erase_block
 
-    cmp turnMul, 3
+    cmp turnMul, 4
     jne continue_turn_right
-    mov turnMul, 1
+    mov turnMul, 0
     continue_turn_right:
         mov AL, 7
         mov BL, turnMul
