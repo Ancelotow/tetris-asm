@@ -10,44 +10,20 @@ pile    segment stack     ; Segment de pile
 pile    ends
 
 donnees segment public    ; Segment de donnees
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Paramètres pour getColor
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données pour "getColor"
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     pX DW 0
     pY DW 0
     retCol DB 0
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Paramètres pour move_down
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données pour "move_down"
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     isColision DB 0         ;detecte collision
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Autres données
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;
-    cXX DW 150           ; Coordonée X  de la pièce courante
-    cYY DW 25            ; Coordonée Y de la pièce courante
-    cCol DB 42          ; Couleur de la pièce courante
-    cBlocks DW 0        ; Block courant
-    cBlocksWidth DB 0   ; Largeur du block courant
-    cBlocksHeight DB 0  ; Hauteur du block courant
-    fBlocks DW 0        ; Block futur
-    fXX DW 257           ; Coordonée X  de la pièce future
-    fYY DW 78            ; Coordonée Y de la pièce future
-    nbTurn DB 0
-    cCodeBlock DB 0
-
-    nbLoop DB 0         ; nombre de tour de la pièce courante
-    cWidth DB 0         ; current largeur
-    cHeight DB 0        ; current hauteur
-    loopY DW 0          ; coordonnée de comparaison
-    loopX DW 0          ; coordonnée de comparaison
-    previousIsColor DB 0
-    incr DW 0
-    result DB 0
-
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données utilisée dans la fonction de dessin
+    ; Données pour "draw_block"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     tabX DW 0               ; Coordonée X pour le dessin
     tabY DW 0               ; Coordonée Y pour le dessin
@@ -59,11 +35,40 @@ donnees segment public    ; Segment de donnees
     blockToDraw DW 0
     colorToDraw DB 0
 
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données pour "getColor"
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    nbLoop DB 0         ; nombre de tour de la pièce courante
+    cWidth DB 0         ; current largeur
+    cHeight DB 0        ; current hauteur
+    loopY DW 0          ; coordonnée de comparaison
+    loopX DW 0          ; coordonnée de comparaison
+    previousIsColor DB 0
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données utilisée dans les fonctions move
+    ; Données pour les fonction "move"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     nbLoopMove DB 0
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données sur le block courant
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    cXX DW 150           ; Coordonée X  de la pièce courante
+    cYY DW 25            ; Coordonée Y de la pièce courante
+    cCol DB 42          ; Couleur de la pièce courante
+    cBlocks DW 0        ; Block courant
+    cBlocksWidth DB 0   ; Largeur du block courant
+    cBlocksHeight DB 0  ; Hauteur du block courant
+    cCodeBlock DB 0
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données sur le prochain block
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    fBlocks DW 0        ; Block futur
+    fXX DW 257           ; Coordonée X  de la pièce future
+    fYY DW 78            ; Coordonée Y de la pièce future
+
+    nbTurn DB 0
 donnees ends
 
 code    segment public    ; Segment de code
@@ -74,14 +79,14 @@ prog:
 	mov DS, AX
     call Video13h
     call get_random_blocks
-    call get_other_blocks
+    call get_next_blocks
+    call draw_next_block
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 boucle:
     call drawLand
-    call draw_futurBlock
     call get_userinput
     call get_colision
     mov tempo, 5
@@ -269,9 +274,10 @@ drop_block:
     mov nbLoop, 0
     mov cXX, 150
     mov cYY, 25
-    mov AX, fBlocks
-    mov cBlocks, AX
-    call get_other_blocks
+    mov BX, fBlocks
+    mov cBlocks, BX
+    call get_next_blocks
+    call draw_next_block
     drop_block_move:
         inc nbLoop
         add cYY, 1
@@ -279,6 +285,8 @@ drop_block:
         mov tabY, AX
         mov AX, cXX
         mov tabX, AX
+        mov BX, cBlocks
+        mov blockToDraw, BX
         call draw_block
         ret
 
@@ -344,19 +352,6 @@ get_colision:
         mov loopY, AX
         jmp loop_vertical_compare
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Dessine le block courant
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-draw_blocks_old:
-;regarder pour remettre les pixels au noir avant d'affiché new piece
-    mov AX, fXX
-    mov hX, AX
-    mov AX, fYY
-    mov hY, AX
-    mov BX, fBlocks
-    call drawIcon
-    ret
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Imprime un pixel vert à la position (20,20). Utiliser pour les tests
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -381,15 +376,16 @@ drawLand:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;  Affiche le rectangle avec les futures pièces
+;  Affiche la prochaine pièce
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-draw_futurBlock:
+draw_next_block:
     mov Rx, 252
     mov Ry, 70
     mov Rw, 30
     mov Rh, 25
     mov col, 7
     call Rectangle
+
     mov AX, fYY
     mov tabY, AX
     mov AX, fXX
@@ -415,7 +411,7 @@ get_random_blocks:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;  Prépare un block aléatoirement et le stocke dans fBlocks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-get_other_blocks:
+get_next_blocks:
     mov diviseur, 7
     call get_random
     mov AX, reste
