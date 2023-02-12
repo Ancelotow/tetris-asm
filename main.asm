@@ -23,7 +23,7 @@ donnees segment public    ; Segment de donnees
     isColision DB 0         ;detecte collision
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données pour "draw_block"
+    ; Données pour "draw_block" et "erase_block"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     tabX DW 0               ; Coordonée X pour le dessin
     tabY DW 0               ; Coordonée Y pour le dessin
@@ -35,7 +35,7 @@ donnees segment public    ; Segment de donnees
     blockToDraw DW 0
     colorToDraw DB 0
 
-     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données pour "getColor"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     nbLoop DB 0         ; nombre de tour de la pièce courante
@@ -163,7 +163,15 @@ turn_move:
 ; Tourne le block à droite
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 turn_right:
+    ; Efface le block
+    mov AX, cXX
+    mov tabX, AX
+    mov AX, cYY
+    mov tabY, AX
+    mov BX, cBlocks
+    mov blockToDraw, BX
     call erase_block
+
     mov AL, cCodeBlock
     add AL, 14
     mov codeBlock, AL
@@ -190,11 +198,11 @@ turn_right:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Efface le block avant de le tourner
+; Efface le block passé en paramètre
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 erase_block:
     ; Récupération de la width du block
-    mov BX, cBlocks
+    mov BX, blockToDraw
     mov AX, [BX]
     mov tabWidth, AX
 
@@ -237,12 +245,12 @@ erase_block:
         ; Ajout de la couleur
         mov col, 0
         ; Coordonnées X
-        mov AX, cXX
+        mov AX, tabX
         add AX, tabCurrentWidth
         dec AX
         mov cCX, AX
         ; Coordonnées Y
-        mov AX, cYY
+        mov AX, tabY
         add AX, tabRow
         mov cDX, AX
         ret
@@ -276,6 +284,7 @@ drop_block:
     mov cYY, 25
     mov BX, fBlocks
     mov cBlocks, BX
+    call erase_next_blocks
     call get_next_blocks
     call draw_next_block
     drop_block_move:
@@ -379,6 +388,7 @@ drawLand:
 ;  Affiche la prochaine pièce
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 draw_next_block:
+    ; Dessine le rectangle
     mov Rx, 252
     mov Ry, 70
     mov Rw, 30
@@ -386,6 +396,7 @@ draw_next_block:
     mov col, 7
     call Rectangle
 
+    ; Dessine le nouveau block
     mov AX, fYY
     mov tabY, AX
     mov AX, fXX
@@ -436,6 +447,19 @@ get_next_blocks:
     add BX, 2
     mov AX, [BX]
     mov cCol, AL
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  Efface le prochain block
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+erase_next_blocks:
+    mov AX, fXX
+    mov tabX, AX
+    mov AX, fYY
+    mov tabY, AX
+    mov BX, fBlocks
+    mov blockToDraw, BX
+    call erase_block
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
