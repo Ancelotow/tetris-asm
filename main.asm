@@ -67,6 +67,7 @@ donnees segment public    ; Segment de donnees
     fBlocks DW 0        ; Block futur
     fXX DW 257           ; Coordonée X  de la pièce future
     fYY DW 78            ; Coordonée Y de la pièce future
+    fCodeBlock DB 0
 
     nbTurn DB 0
 donnees ends
@@ -279,11 +280,17 @@ drop_block:
     call draw_block
     cmp isColision, 0
     je drop_block_move
+
+    ; Prépare l'affichage du nouveau block courant
     mov nbLoop, 0
     mov cXX, 150
     mov cYY, 25
     mov BX, fBlocks
     mov cBlocks, BX
+    mov AL, fCodeBlock
+    mov cCodeBlock, AL
+
+    ; Affiche le prochain block
     call erase_next_blocks
     call get_next_blocks
     call draw_next_block
@@ -427,6 +434,7 @@ get_next_blocks:
     call get_random
     mov AX, reste
     mov codeBlock, AL
+    mov fCodeBlock, AL
     call get_block_from_code
     mov BX, block
     mov fBlocks, BX    
