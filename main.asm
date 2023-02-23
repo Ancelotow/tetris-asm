@@ -69,7 +69,11 @@ donnees segment public    ; Segment de donnees
     fYY DW 78           ; Coordonée Y de la pièce future
     fCodeBlock DB 0
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données pour faire tourner les blocks
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     turnMul DB 0        ; Multiplicateur pour tourner les pièces
+    turnMulResutl DB 0  ; Résultat de la multiplication pour faire tourner la pièce
 donnees ends
 
 code    segment public    ; Segment de code
@@ -108,7 +112,7 @@ end_game:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 get_userinput:
     call PeekKey
-    cmp userinput, 'a'
+    cmp userinput, 'p'
     je end_game
     cmp userinput, 'q'
     je move_left
@@ -155,15 +159,56 @@ move_right:
         jne move_right_loop
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Execution des commande pour tourner saisie par le joueur
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 turn_move:
     cmp userinput, 'e'
     je turn_right
+    cmp userinput, 'a'
+    je turn_left
     ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Tourne le block à gauche
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+turn_left:
+    cmp turnMul, 0
+    jae continue_turn_left ; ja: Supérieur ou égale (<=)
+    mov turnMul, 3
+    continue_turn_left:
+        mov AL, 7
+        mov BL, turnMul
+        mul BL
+        mov turnMulResutl, AL
+        cmp turnMul, 0
+        je reset_turn_left
+        dec turnMul
+        jmp turn
+        reset_turn_left:
+            mov turnMul, 3
+            jmp turn
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Tourne le block à droite
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 turn_right:
+    cmp turnMul, 4
+    jne continue_turn_right
+    mov turnMul, 0
+    continue_turn_right:
+        mov AL, 7
+        mov BL, turnMul
+        mul BL
+        mov turnMulResutl, AL
+        inc turnMul
+    jmp turn
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Tourne le block à droite
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+turn:
     ; Efface le block
     mov AX, cXX
     mov tabX, AX
@@ -173,40 +218,31 @@ turn_right:
     mov blockToDraw, BX
     call erase_block
 
-    cmp turnMul, 4
-    jne continue_turn_right
-    mov turnMul, 0
-    continue_turn_right:
-        mov AL, 7
-        mov BL, turnMul
-        mul BL
-        inc turnMul
-        mov DL, AL
+    ; Préparation des registre pour faire tourner la pièce
+    mov AL, cCodeBlock
+    add AL, turnMulResutl
+    mov codeBlock, AL
+    call get_block_from_code
+    mov BX, block
+    mov cBlocks, BX
 
-        mov AL, cCodeBlock
-        add AL, DL
-        mov codeBlock, AL
-        call get_block_from_code
-        mov BX, block
-        mov cBlocks, BX
+    ; Récupération de la taille du tableau
+    mov BX, cBlocks
+    mov AX, [BX]
+    mov cBlocksWidth, AL
 
-        ;Récupération de la taille du tableau
-        mov BX, cBlocks
-        mov AX, [BX]
-        mov cBlocksWidth, AL
+    ; Récupération de la hauteur du tableau
+    add BX, 2
+    mov AX, [BX]
+    mov CL, cBlocksWidth
+    div CL
+    mov cBlocksHeight, AL
 
-        ;Récupération de la hauteur du tableau
-        add BX, 2
-        mov AX, [BX]
-        mov CL, cBlocksWidth
-        div CL
-        mov cBlocksHeight, AL
-
-        ; Récupération du code couleur
-        add BX, 2
-        mov AX, [BX]
-        mov cCol, AL
-        ret
+    ; Récupération du code couleur
+    add BX, 2
+    mov AX, [BX]
+    mov cCol, AL
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Efface le block passé en paramètre
