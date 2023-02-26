@@ -17,14 +17,9 @@ donnees segment public    ; Segment de donnees
     pY DW 0
     retCol DB 0
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données pour "move_down"
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    isColision DB 0     ;detecte collision
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; Données pour "draw_block" et "erase_block"
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Données pour "draw_block", "erase_block" et "colision_detector"
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     tabX DW 0           ; Coordonée X pour le dessin
     tabY DW 0           ; Coordonée Y pour le dessin
     tabWidth DW 0
@@ -34,6 +29,8 @@ donnees segment public    ; Segment de donnees
     tabCurrentWidth DW 0
     blockToDraw DW 0
     colorToDraw DB 0
+    isColision DB 0     ;detecte collision
+
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données pour "getColor"
@@ -49,6 +46,7 @@ donnees segment public    ; Segment de donnees
     ; Données pour les fonction "move"
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     nbLoopMove DB 0
+    oldCXX DW 0
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; Données sur le block courant
@@ -86,14 +84,14 @@ prog:
     call get_random_blocks
     call get_next_blocks
     call draw_next_block
+    call drawLand
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Boucle principale du progralle
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 boucle:
-    call drawLand
+    call drop_block
     call get_userinput
-    call get_colision
     mov tempo, 5
     call sleep
     jmp  boucle
@@ -125,6 +123,8 @@ get_userinput:
 ; Déplace le block à gauche
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 move_left:
+    mov AX, cXX
+    mov oldCXX, AX
     mov nbLoopMove, 0
     move_left_loop:
         inc nbLoopMove
@@ -135,15 +135,25 @@ move_left:
         mov tabX, AX
         mov BX, cBlocks
         mov blockToDraw, BX
+        call colision_detector
+        cmp isColision, 1
+        je move_left_colision
         call draw_block
         cmp nbLoopMove, 5
         jne move_left_loop
-    ret
+        ret
+    move_left_colision:
+        mov AX, oldCXX
+        mov cXX, AX
+        mov isColision, 0
+        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Déplace le block à droite
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 move_right:
+    mov AX, cXX
+    mov oldCXX, AX
     mov nbLoopMove, 0
     move_right_loop:
         inc nbLoopMove
@@ -154,10 +164,18 @@ move_right:
         mov tabX, AX
         mov BX, cBlocks
         mov blockToDraw, BX
+        call colision_detector
+        cmp isColision, 1
+        je move_right_colision
         call draw_block
         cmp nbLoopMove, 5
         jne move_right_loop
-    ret
+        ret
+    move_right_colision:
+        mov AX, oldCXX
+        mov cXX, AX
+        mov isColision, 0
+        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Execution des commande pour tourner saisie par le joueur
@@ -322,7 +340,8 @@ drop_block:
     mov tabX, AX
     mov BX, cBlocks
     mov blockToDraw, BX
-    call draw_block
+    inc tabY
+    call colision_detector
     cmp isColision, 0
     je drop_block_move
 
@@ -342,77 +361,9 @@ drop_block:
     call draw_next_block
     drop_block_move:
         inc nbLoop
-        add cYY, 1
-        mov AX, cYY
-        mov tabY, AX
-        mov AX, cXX
-        mov tabX, AX
-        mov BX, cBlocks
-        mov blockToDraw, BX
+        inc cYY
         call draw_block
         ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Vérifie s'il y a une colision ou non
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-get_colision:
-    mov AX, cYY
-    mov loopY, AX
-    mov AX, cXX
-    mov loopX, AX
-    inc loopX
-    mov cWidth, 3
-    mov cHeight, 0
-    mov isColision, 0
-    mov previousIsColor, 0
-    jmp loop_vertical_compare
-
-    loop_vertical_compare:
-        mov AX, loopX
-        mov pX, AX
-        mov AX, loopY
-        mov pY, AX
-        call get_color ; Récupère la couleur
-        mov AL, cCol
-        cmp retCol, AL ; Vérifie que c'est la même couleur que le pixel courant
-        je loop_vertical_compare_color
-        cmp retCol, 0
-        je loop_vertical_compare_black
-        cmp previousIsColor, 1
-        jne loopback_vertical
-        mov isColision, 1
-        jmp end_move_down
-
-    end_move_down:
-        ret
-
-    loopback_vertical:
-        inc cHeight
-        inc loopY
-        jmp loop_vertical_compare
-
-    loop_vertical_compare_color:
-        mov previousIsColor, 1
-        jmp loopback_vertical
-
-    loop_vertical_compare_black:
-        mov previousIsColor, 0
-        mov AL, cBlocksHeight
-        cmp cHeight, AL
-        je loop_vertical_compare_change_column
-        jmp loopback_vertical
-
-    loop_vertical_compare_change_column:
-        mov previousIsColor, 0
-        mov AL, cBlocksWidth
-        cmp cWidth, AL
-        je end_move_down
-        inc cWidth
-        inc loopX
-        mov cHeight, 0
-        mov AX, cYY
-        mov loopY, AX
-        jmp loop_vertical_compare
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Imprime un pixel vert à la position (20,20). Utiliser pour les tests
@@ -434,7 +385,6 @@ drawLand:
     mov Rh, 160
     mov col, 7
     call Rectangle
-    call drop_block
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -515,6 +465,73 @@ erase_next_blocks:
     mov blockToDraw, BX
     call erase_block
     ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Détecte s'il y a une colision ou non
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+colision_detector:
+    mov isColision, 0
+    ; Récupération de la width du block
+    mov BX, blockToDraw
+    mov AX, [BX]
+    mov tabWidth, AX
+
+    ; Récupération du nombre total de caractère dans le block
+    add BX, 2
+    mov AX, [BX]
+    mov tabLength, AX
+
+    add BX, 2
+    mov AX, [BX]
+    mov colorToDraw, AL
+
+    add BX, 2
+    mov tabCurrentLenght, 0
+    mov tabRow, 0
+    mov tabCurrentWidth, 1
+    loop_colision_detector:
+        mov AX, [BX]
+        cmp AL, 0
+        jne colision_detector_color_pixel
+
+        loop_colision_detector_afer_pixel_continue:
+            mov AX, tabWidth
+            cmp AX, tabCurrentWidth
+            je colision_detector_jump
+            inc tabCurrentWidth
+
+        loop_colision_detector_afer_jump_continue:
+            inc BX
+            inc tabCurrentLenght
+            mov AX, tabCurrentLenght
+            cmp AX, tabLength
+            jne loop_colision_detector
+            ret
+
+    colision_detector_jump:
+        mov tabCurrentWidth, 1
+        inc tabRow
+        jmp loop_colision_detector_afer_jump_continue
+
+    colision_detector_color_pixel:
+        ; Coordonnées X
+        mov AX, tabX
+        add AX, tabCurrentWidth
+        dec AX
+        mov pX, AX
+        ; Coordonnées Y
+        mov AX, tabY
+        add AX, tabRow
+        mov pY, AX
+
+        call get_color
+        cmp retCol, 0
+        je loop_colision_detector_afer_pixel_continue
+        mov AL, colorToDraw
+        cmp retCol, AL
+        je loop_colision_detector_afer_pixel_continue
+        mov isColision, 1
+        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Affiche le block courant
