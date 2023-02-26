@@ -29,6 +29,7 @@ donnees segment public    ; Segment de donnees
     tabCurrentWidth DW 0
     blockToDraw DW 0
     colorToDraw DB 0
+    newColorToDraw DB 0
     isColision DB 0     ;detecte collision
 
 
@@ -346,6 +347,8 @@ drop_block:
     je drop_block_move
 
     ; Prépare l'affichage du nouveau block courant
+    dec tabY
+    call draw_block_update
     mov nbLoop, 0
     mov cXX, 150
     mov cYY, 25
@@ -576,7 +579,7 @@ draw_block:
             mov AX, tabCurrentLenght
             cmp AX, tabLength
             jne loop_draw_block
-            jmp draw_block_end
+            ret
 
     draw_block_jump:
         mov tabCurrentWidth, 1
@@ -597,9 +600,6 @@ draw_block:
         je loop_draw_block_draw_prixel
         jmp loop_draw_block_afer_pixel_continue
 
-    draw_block_end:
-        ret
-
     draw_block_draw_get_coordinates:
         ; Ajout de la couleur
         mov col, AL
@@ -613,6 +613,70 @@ draw_block:
         add AX, tabRow
         mov cDX, AX
         ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Update la couleur du block
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+draw_block_update:
+    ; Récupération de la width du block
+    mov BX, blockToDraw
+    mov AX, [BX]
+    mov tabWidth, AX
+
+    ; Récupération du nombre total de caractère dans le block
+    add BX, 2
+    mov AX, [BX]
+    mov tabLength, AX
+
+    add BX, 2
+    mov AX, [BX]
+    mov colorToDraw, AL
+    mov newColorToDraw, AL
+    add newColorToDraw, 8
+
+    add BX, 2
+    mov tabCurrentLenght, 0
+    mov tabRow, 0
+    mov tabCurrentWidth, 1
+    loop_draw_block_update:
+        mov AX, [BX]
+        cmp AL, colorToDraw
+        je draw_block_update_color
+
+
+        loop_draw_block_update_afer_pixel_continue:
+            mov AX, tabWidth
+            cmp AX, tabCurrentWidth
+            je draw_block_update_jump
+            inc tabCurrentWidth
+
+        loop_draw_block_update_afer_jump_continue:
+            inc BX
+            inc tabCurrentLenght
+            mov AX, tabCurrentLenght
+            cmp AX, tabLength
+            jne loop_draw_block_update
+            ret
+
+    draw_block_update_jump:
+        mov tabCurrentWidth, 1
+        inc tabRow
+        jmp loop_draw_block_update_afer_jump_continue
+
+    draw_block_update_color:
+        mov AL, newColorToDraw
+        mov col, AL
+        ; Coordonnées X
+        mov AX, tabX
+        add AX, tabCurrentWidth
+        dec AX
+        mov cCX, AX
+        ; Coordonnées Y
+        mov AX, tabY
+        add AX, tabRow
+        mov cDX, AX
+        call PaintPxl
+        jmp loop_draw_block_update_afer_pixel_continue
 
 
 code    ends               ; Fin du segment de code
